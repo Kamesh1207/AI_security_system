@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Smart Secure Access & Intrusion Detection System</title>
+    <meta name="description" content="Real-time AI-powered security surveillance and access control dashboard">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <!-- ========== HEADER ========== -->
+    <div id="dashboard" class="dashboard-container">
+        <header id="main-header" class="header-bar">
+            <div class="header-left">
+                <div class="logo-wrap">
+                    <img id="logo-img" src="/static/logo.png" alt="AI Security" class="logo-img"
+                         onerror="this.style.display='none'">
+                    <span class="logo-dot"></span>
+                </div>
+                <div class="header-titles">
+                    <h1 class="main-title">AI SMART SECURE ACCESS</h1>
+                    <p class="sub-title">Industrial Perimeter Defense &amp; Surveillance System</p>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="hw-badge" id="hw-badge">
+                    <span class="status-dot status-dot-red pulse-ring" id="hw-dot"></span>
+                    <span class="hw-label" id="hw-label">ESP32 OFFLINE</span>
+                </div>
+                <div class="status-badge" id="status-badge">
+                    <span class="status-dot status-dot-green pulse-ring" id="status-dot"></span>
+                    <span class="status-label" id="status-label">MONITORING</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- ========== THREAT BANNER ========== -->
+        <div id="threat-banner" class="threat-banner hidden">
+            <div class="threat-icon">&#9888;</div>
+            <div class="threat-content">
+                <h2 class="threat-title">&#9888; CRITICAL SECURITY ALARM</h2>
+                <p class="threat-message" id="threat-message">Suspicious activity detected in secure zone.</p>
+            </div>
+            <button id="reset-alarm-btn" class="threat-reset-btn" onclick="resetAlarm()">
+                &#128737; RESET
+            </button>
+        </div>
+
+        <!-- ========== MAIN GRID ========== -->
+        <div class="main-grid">
+            <!-- LEFT COLUMN: Camera + Snapshot -->
+            <div class="col-left">
+                <!-- Camera Feed -->
+                <div class="glow-card">
+                    <div class="section-header">
+                        <h2 class="section-title">
+                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M16 8v5a3 3 0 006 0v-1a10 10 0 10-3.92 7.94"/></svg>
+                            Live Surveillance
+                        </h2>
+                        <span class="section-badge badge-cyan">STREAMING</span>
+                    </div>
+                    <div class="camera-container video-scanline">
+                        <img id="camera-feed" src="/video_feed" alt="Camera Feed" class="camera-img">
+                        <div class="camera-overlay-gradient"></div>
+                        <div class="camera-rec-badge">
+                            <span class="rec-dot"></span>
+                            <span class="rec-text">REC</span>
+                        </div>
+                        <div id="motion-overlay" class="motion-overlay hidden">
+                            <span class="motion-icon">&#127939;</span>
+                            <span class="motion-text">MOTION IDENTIFIED</span>
+                        </div>
+                        <div class="camera-timestamp" id="camera-ts">CAM_01 // --:--:--</div>
+                    </div>
+                </div>
+
+                <!-- Snapshot Viewer -->
+                <div class="glow-card">
+                    <div class="section-header">
+                        <h2 class="section-title">
+                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                            Latest Incident Snapshot
+                        </h2>
+                    </div>
+                    <div class="snapshot-container">
+                        <img id="snapshot-img" src="" alt="No Incidents" class="snapshot-img">
+                        <div class="snapshot-ts" id="snapshot-ts">N/A</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT COLUMN: Controls -->
+            <div class="col-right">
+                <!-- Lock Widget -->
+                <div class="glow-card" id="lock-card">
+                    <div class="lock-row">
+                        <div class="lock-circle lock-circle-locked" id="lock-circle">
+                            <span class="lock-icon" id="lock-icon">&#128274;</span>
+                        </div>
+                        <div class="lock-info">
+                            <h3 class="lock-title" id="lock-title">SECURE ZONE LOCKED</h3>
+                            <p class="lock-detail" id="lock-detail">Relay GPIO 21 — LOW (Secured)</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Keypad Terminal -->
+                <div class="glow-card">
+                    <div class="section-header">
+                        <h2 class="section-title">
+                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M6 8h.01M10 8h.01M14 8h.01M18 8h.01M6 12h.01M10 12h.01M14 12h.01M18 12h.01M6 16h12"/></svg>
+                            Keypad Terminal
+                        </h2>
+                    </div>
+                    <div class="keypad-display" id="keypad-display">—— LOCKED ——</div>
+                    <div class="keypad-status-row">
+                        <span class="status-dot status-dot-gray" id="keypad-dot"></span>
+                        <span class="keypad-status-text" id="keypad-status-text">Awaiting RFID Authentication</span>
+                    </div>
+                </div>
+
+                <!-- Sensor Telemetry -->
+                <div class="glow-card">
+                    <div class="section-header">
+                        <h2 class="section-title">
+                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12h4l3-9 4 18 3-9h4"/></svg>
+                            Sensor Telemetry
+                        </h2>
+                    </div>
+                    <div class="telemetry-list">
+                        <div class="metric-box">
+                            <div class="metric-icon metric-icon-cyan">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07"/></svg>
+                            </div>
+                            <div class="metric-info">
+                                <div class="metric-value" id="sound-value">0</div>
+                                <div class="metric-label">Sound ADC Level</div>
+                            </div>
+                        </div>
+                        <div class="metric-box">
+                            <div class="metric-icon metric-icon-orange">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+                            </div>
+                            <div class="metric-info">
+                                <div class="metric-value" id="rfid-value">IDLE</div>
+                                <div class="metric-label">RFID Reader Status</div>
+                            </div>
+                        </div>
+                        <div class="metric-box">
+                            <div class="metric-icon metric-icon-green">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                            </div>
+                            <div class="metric-info">
+                                <div class="metric-value" id="motion-value">NO PRESENCE</div>
+                                <div class="metric-label">IR / Ultrasonic</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== LOGS ========== -->
+        <div class="glow-card logs-card">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
+                    Real-time Event Stream
+                </h2>
+                <span class="section-badge badge-cyan" id="log-count-badge">0 EVENTS</span>
+            </div>
+            <div class="logs-container" id="logs-container">
+                <div class="logs-empty">
+                    &#128752; Awaiting events...
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== FOOTER ========== -->
+        <footer class="dashboard-footer">
+            <p>AI SMART SECURE ACCESS CONTROL SYSTEM // ESP32 + FLASK + OPENCV // 2026</p>
+        </footer>
+    </div>
+
+    <script src="/static/script.js"></script>
+</body>
+</html>

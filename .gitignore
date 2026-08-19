@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.venv/
+env/
+build/
+dist/
+
+# Captured images and logs
+pc_server/captured_images/*.jpg
+pc_server/captured_images/*.png
+pc_server/logs/*.txt
+
+# Arduino compilation
+firmware/smart_security/build/
+*.hex
+*.elf
+*.bin
+
+# IDE and OS
+.vscode/
+.DS_Store
+.idea/
